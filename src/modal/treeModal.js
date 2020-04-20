@@ -63,16 +63,15 @@ function getArrayLevelWithChildren(selectKey, splitStr) {
    * @return {array} 修改后的数据
    */
 function traverseMapStructureAndChangeTreeData(treeData) {
-    if (window.keyToLabelMap.size <= 0) return treeData;
+    if (window.keyToLabelMap.size <= 0) return treeData.toArray();
     let changedTreeData = treeData;
     window.keyToLabelMap.map((label, key) => {
       const arrKeyLevel = getArrayLevelWithChildren(key, '-');
-      changedTreeData = treeData.setIn([...arrKeyLevel, 'label'], label);
-      window.keyToLabelMap = window.keyToLabelMap.delete(key);
+      changedTreeData = changedTreeData.setIn([...arrKeyLevel, 'label'], label);
     });
-    console.log('===============');
-    console.log(changedTreeData);
-    console.log('===============');
+    window.keyToLabelMap = window.keyToLabelMap.clear();
+    console.log(window.keyToLabelMap);
+    // console.log('===============');
     return changedTreeData.toArray();
 }
 
@@ -135,8 +134,8 @@ const getAddItems = (selectKey, existedChildrenNodes, addCount) => {
 async function addTreeNodes(selectNode, selectKey, treeData, dataName) {
     // 获取选中节点的子节点数组
     if (!selectKey) return alert('请先选中节点');
-    // const changedTreeData = traverseMapStructureAndChangeTreeData(List(treeData));
-    const changedTreeData = treeData;
+    const changedTreeData = traverseMapStructureAndChangeTreeData(List(treeData));
+    // const changedTreeData = treeData;
     const addCount = getH5Data(selectNode, dataName);
     const arrKeyLevel = getArrayLevel(selectKey, '-');
     const arrKeyLevelLength = arrKeyLevel.length;
@@ -192,8 +191,8 @@ const getEffectedNodesByDelete = (selectKey, currentSiblingNodes) => {
 async function deleteTreeNode(selectKey, treeData) {
     // 获取选中节点的子节点数组
     if (!selectKey) return alert('请先选中节点');
-    // const changedTreeData = traverseMapStructureAndChangeTreeData(List(treeData));
-    const changedTreeData = treeData;
+    const changedTreeData = traverseMapStructureAndChangeTreeData(List(treeData));
+    // const changedTreeData = treeData;
     const arrKeyLevel = getArrayLevel(selectKey, '-');
     const arrKeyLevelLength = arrKeyLevel.length;
     let tempTreeNodeData = changedTreeData;
@@ -204,6 +203,7 @@ async function deleteTreeNode(selectKey, treeData) {
             getEffectedNodesByDelete(selectKey, tempTreeNodeData);
             break;
         }
+        // debugger;
         tempTreeNodeData = tempTreeNodeData[arrKeyLevel[i]].children;
     }
     console.log(2);
