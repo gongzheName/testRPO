@@ -1,0 +1,38 @@
+* {
+  box-sizing: border-box;
+}
+.kd-tree-wrap {
+  position: relative;
+  width: 360px;
+  height: 360px;
+  margin-top: 100px;
+  background-color: #ffffff;
+  border: 1px solid #00aadd;
+  border-radius: 2px;
+}
+.infinite-list-container {
+  position: relative;
+  overflow: auto;
+  height: 100%;
+}
+.infinite-list-phantom {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  background: url(../../static/Eclipse-1s-200px.gif) repeat;
+  background-size: auto 22px;
+  /* z-index: -1; */
+}
+.infinite-list {
+  left: 0;
+  right: 0;
+  top: 0;
+  position: absolute;
+}
+.skelton-screen {
+  left: 0;
+  right: 0;
+  top: 0;
+  position: absolute;
+}

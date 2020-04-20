@@ -1,0 +1,19 @@
+.kd-tree-node-wrap {
+  text-align: left;
+  background-color: #fff;
+  height: 21px;
+  line-height: 21px;
+}
+.kd-tree-node-title {
+  position: relative;
+}
+.kd-tree-node-title-txt {
+  display: inline-block;
+  width: 16px;
+}
+.edit-tree-node-title {
+  display: none;
+}
+.title-edit-wrap:hover .edit-tree-node-title {
+  display: inline-block;
+}
