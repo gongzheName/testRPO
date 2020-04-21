@@ -44,11 +44,6 @@ const Tree = () => {
   // 可视区域内, 元素总数: 计算可视区域总条目数
   const visibleCount = getComputedVisibleCount(screenHeight, estimatedItemSize);
 
-  // const flattenTree = useMemo(() => {
-  //   const nodeArr = [];
-  //   flattenArray(state.get('treeData').toArray(), false, nodeArr);
-  //   return nodeArr;
-  // }, [state.get('treeData')]);
   // 获取查询数据
   const searchData = useMemo(() => {
     if (!search) return [];

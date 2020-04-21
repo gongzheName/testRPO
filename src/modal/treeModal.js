@@ -1,7 +1,6 @@
 // import { List, fromJS, Map } from "immutable";
 import faker from "faker";
 import { Seq, List } from 'immutable';
-import { topLevel } from '../constant/treeData';
 
 /**
    * 定义数据结构
@@ -45,16 +44,10 @@ function getArrayLevel(selectKey, splitStr) {
    * @return {array} 切割后的数组
    */
 function getArrayLevelWithChildren(selectKey, splitStr) {
-    const arrKeyLevel = selectKey.slice(2).split(splitStr).map(i => (i -= 0));
-    const length = arrKeyLevel.length;
-    const tempArr = [];
-    for (let i = 0; i < length; i++) {
-      tempArr.push(arrKeyLevel[i]);
-      if (i < length - 1) {
-        tempArr.push('children');
-      }
-    }
-    return tempArr;
+    let tempSelectKey = selectKey.slice(2);
+    tempSelectKey = tempSelectKey.replace(/-/g, '-children-');
+    const arrKeyLevel = tempSelectKey.split(splitStr).map(i => (isNaN(parseInt(i)) ? i : +i ));
+    return arrKeyLevel;
 }
 
 /**
@@ -63,16 +56,15 @@ function getArrayLevelWithChildren(selectKey, splitStr) {
    * @return {array} 修改后的数据
    */
 function traverseMapStructureAndChangeTreeData(treeData) {
-    if (window.keyToLabelMap.size <= 0) return treeData.toArray();
+    if (window.keyToLabelMap.size <= 0) return treeData;
     let changedTreeData = treeData;
     window.keyToLabelMap.map((label, key) => {
       const arrKeyLevel = getArrayLevelWithChildren(key, '-');
       changedTreeData = changedTreeData.setIn([...arrKeyLevel, 'label'], label);
     });
     window.keyToLabelMap = window.keyToLabelMap.clear();
-    console.log(window.keyToLabelMap);
-    // console.log('===============');
-    return changedTreeData.toArray();
+    // return changedTreeData.toArray();
+    return changedTreeData;
 }
 
 /**
@@ -138,8 +130,12 @@ async function addTreeNodes(selectNode, selectKey, treeData, dataName) {
     // const changedTreeData = treeData;
     const addCount = getH5Data(selectNode, dataName);
     const arrKeyLevel = getArrayLevel(selectKey, '-');
+    const arrKeyLevelWithChildren = getArrayLevelWithChildren(selectKey, '-');
+    console.log(arrKeyLevel);
+    console.log(arrKeyLevelWithChildren);
+    console.log(changedTreeData.getIn([...arrKeyLevelWithChildren]));
     const arrKeyLevelLength = arrKeyLevel.length;
-    let tempTreeNodeData = changedTreeData;
+    let tempTreeNodeData = changedTreeData.toArray();
     for (let i = 0; i < arrKeyLevelLength; i++) {
         if (i === arrKeyLevelLength - 1) {
             // 当前节点在同级兄弟节点的下标
@@ -219,15 +215,6 @@ async function deleteTreeNode(selectKey, treeData) {
    */
 function updateTreeNodeTitle(selectKey, value, treeData) {
     const arrKeyLevel = getArrayLevelWithChildren(selectKey, '-');
-    // const arrKeyLevelLength = arrKeyLevel.length;
-    // let tempObj = treeData;
-    // for (let i = 0; i < arrKeyLevelLength; i++) {
-    //   if (i === arrKeyLevelLength - 1) {
-    //     tempObj = tempObj[arrKeyLevel[i]];
-    //     break;
-    //   }
-    //   tempObj = tempObj[arrKeyLevel[i]].children;
-    // }
     return treeData.setIn([...arrKeyLevel, 'label'], value);
 }
 
@@ -239,17 +226,6 @@ function updateTreeNodeTitle(selectKey, value, treeData) {
    * @return {array} 返回一个变化后的新数组
    */
 function switchNodeExpand(selectKey, isExpand, treeData) {
-    // const arrKeyLevel = getArrayLevel(selectKey, '-');
-    // const arrKeyLevelLength = arrKeyLevel.length;
-    // let tempObj = treeData;
-    // for (let i = 0; i < arrKeyLevelLength; i++) {
-    //   if (i === arrKeyLevelLength - 1) {
-    //     tempObj = tempObj[arrKeyLevel[i]];
-    //     break;
-    //   }
-    //   tempObj = tempObj[arrKeyLevel[i]].children;
-    // }
-    // tempObj.isExpand = isExpand;
     const arrKeyLevel = getArrayLevelWithChildren(selectKey, '-');
     return treeData.setIn([...arrKeyLevel, 'isExpand'], isExpand);
 }
@@ -306,12 +282,7 @@ function setContentOffset(refContent, scrollTop, estimatedItemSize) {
    * @param {number} idNumber dom节点的id
    * @return {void}
    */
-let idNumber = 0;
 function flattenArray(treeData, isParentExpand, nodeArr, i = 0) {
-  // treeData = List(treeData).setIn([...arrKeyLevel1, 'label'], window.keyToLabelMap.get(key));
-  // console.log(window.keyToLabelMap.get('key'));
-  // window.keyToLabelMap.delete('key');
-  // console.log(window.keyToLabelMap.toJS());
   treeData.forEach(item => {
     const { key, value, label, children } = item;
     let isExpand = item.isExpand || false;
@@ -324,7 +295,6 @@ function flattenArray(treeData, isParentExpand, nodeArr, i = 0) {
     const tempItem = {
       key,
       value,
-      // label: window.keyToLabelMap.has(key) ? window.keyToLabelMap.get(key) : label,
       label,
       splitNum,
       isLeaf,
@@ -334,9 +304,6 @@ function flattenArray(treeData, isParentExpand, nodeArr, i = 0) {
     };
     nodeArr.push(tempItem);
     i++;
-    // if (window.keyToLabelMap.has(key)) {
-    //   window.keyToLabelMap = window.keyToLabelMap.delete(key);
-    // }
     if (!isLeaf && !isExpand) {
       flattenArray(children, isExpand || isParentExpand || false, nodeArr, i);
     }

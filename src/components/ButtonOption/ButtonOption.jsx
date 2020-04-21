@@ -51,7 +51,6 @@ const ButtonOption = () => {
       if (!selectNode) return alert('请先选中节点');
       const tempTreeData = treeData.toArray();
       const tempTreeNodeData = await addTreeNodes(e.target.parentNode, selectNode, tempTreeData, 'addCount');
-      // const tempTreeData = addTreeNodes(e.target.parentNode, selectNode, treeData, 'addCount');
       setDataToRedux(dispatch, tempTreeNodeData);
     }, [dispatch, treeData, selectNode]);
 

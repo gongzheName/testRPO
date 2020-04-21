@@ -57,12 +57,10 @@ const TreeNode = ({ data = {}, changeTitle}) => {
   }
 
   const handleToggleExpand = useCallback((isExpand) => {
-    // const treeData = state.get('treeData').toArray();
     const treeData = state.get('treeData');
     const tempTreeData = switchNodeExpand(key, isExpand, treeData);
     dispatch({
       type: UPDATE_TREE_NODE,
-      // payload: List(treeData)
       payload: tempTreeData
     });
   }, [dispatch, state.get('treeData')]);
@@ -73,7 +71,6 @@ const TreeNode = ({ data = {}, changeTitle}) => {
       if (!refNodeWrap || !refNodeWrap.current) return;
       changeTitle(+(refNodeWrap.current.id.slice(1)), refTitle.current.value);
       window.keyToLabelMap = window.keyToLabelMap.set(key, refTitle.current.value);
-      console.log(window.keyToLabelMap);
     }, 500),
     [dispatch, state.get('treeData'), refTitle, refNodeWrap]
   );

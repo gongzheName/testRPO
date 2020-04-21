@@ -1,7 +1,7 @@
 
 import faker from 'faker';
 // 每一级下的节点总数
-const defaultX = 1000;
+const defaultX = 10;
 // 每级节点里有y个节点、存在子节点
 const defaultY = 10;
 // 树的level层级数（0表示一级）
