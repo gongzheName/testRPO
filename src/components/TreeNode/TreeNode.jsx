@@ -30,6 +30,7 @@ const TreeNode = ({ data = {}, changeTitle}) => {
   const selectNode = state.get('selectNode');
   const search = state.get('search');
   const isExpandAll = state.get('isExpandAll');
+
   const {
     isLeaf,
     label,

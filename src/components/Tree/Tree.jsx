@@ -99,7 +99,7 @@ const Tree = () => {
         <div ref={refPhantom} className="infinite-list-phantom"></div>
         <div ref={refContent} className="infinite-list">
           {
-            visibleData && visibleData.length ?
+            visibleData.size ?
               visibleData.map((item, index) => (
                 <TreeNode key={item.value} data={item} index={index} changeTitle={changeTitle} />
               ))

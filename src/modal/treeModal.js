@@ -351,18 +351,14 @@ function flattenArray(treeData, isParentExpand, nodeArr, i = 0) {
    * 备选方案: 直接查出前n条数据跳出
    */
 function getSearchList(search, flattenData) {
-  return flattenData.filter((item) => {
-    if (item.label.includes(search)) {
-      return true;
-    }
-  });
+  return flattenData.filter((item) => item.label.includes(search));
 }
 
 /**
    * 获取当前视窗的数据
+   * @param {object} options 可选项/配置项
    * @param {array} searchData 查询结果
    * @param {array} flattenData 所有数据拍平后的一维数组
-   * @param {object} options 可选项/配置项
    * @return {array}
    */
 function getVisibleData(options = {searchData: [], flattenData: [], search: '', start: 0, topLevel: 10, visibleCount: 10}) {
@@ -377,10 +373,10 @@ function getVisibleData(options = {searchData: [], flattenData: [], search: '', 
     let seqListData = Seq(searchData);
     if (!flattenData) return;
     if (!!search) {
-      return seqListData.slice(0, topLevel).toArray();
+      return seqListData.slice(0, topLevel);
     }
     seqListData = Seq(flattenData);
-    return seqListData.slice(start, start + visibleCount).toArray();
+    return seqListData.slice(start, start + visibleCount);
 }
 
 export {
