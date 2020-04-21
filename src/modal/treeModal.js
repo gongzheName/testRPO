@@ -131,7 +131,6 @@ async function addTreeNodes(selectNode, selectKey, treeData, dataName) {
     const addCount = getH5Data(selectNode, dataName);
     const arrKeyLevel = getArrayLevel(selectKey, '-');
     const arrKeyLevelWithChildren = getArrayLevelWithChildren(selectKey, '-');
-    console.log(arrKeyLevel);
     console.log(arrKeyLevelWithChildren);
     console.log(changedTreeData.getIn([...arrKeyLevelWithChildren]));
     const arrKeyLevelLength = arrKeyLevel.length;
