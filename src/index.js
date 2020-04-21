@@ -1,6 +1,7 @@
 import React, { Profiler } from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
+import 'babel-polyfill';
 import store from "./store";
 
 import App from "./App";

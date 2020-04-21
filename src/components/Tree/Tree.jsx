@@ -22,6 +22,8 @@ import {
   flattenArray,
   getSearchList,
   getVisibleData,
+  getTopLevelData,
+  getNormalData,
 } from '../../modal/treeModal';
 import { debounce } from "../../util";
 import "./tree.css";
@@ -51,7 +53,10 @@ const Tree = () => {
   }, [search, flattenTree]);
   // 渲染到页面上的数据列表
   const visibleData = useMemo(() => {
-    return getVisibleData({ searchData, flattenData: flattenTree, search, start, visibleCount, topLevel });
+    if (search) {
+      return getTopLevelData(topLevel, searchData);
+    }
+    return getNormalData(start, visibleCount, flattenTree);
   }, [flattenTree, search, start, visibleCount, searchData]);
 
   useEffect(() => {
@@ -68,7 +73,6 @@ const Tree = () => {
   }, [refList]);
 
   const changeTitle = useCallback((index, value) => {
-    // TODO: 改变一维数组, 不改变树状数据
     flattenTree[index].label = value;
     setFlattenTree(flattenTree);
   }, [flattenTree]);
@@ -95,7 +99,7 @@ const Tree = () => {
         <div ref={refContent} className="infinite-list">
           {
             visibleData.size ?
-              visibleData.map((item, index) => (
+              visibleData.toArray().map((item, index) => (
                 <TreeNode key={item.value} data={item} index={index} changeTitle={changeTitle} />
               ))
               : <span>查无记录, 请修改查询条件</span>

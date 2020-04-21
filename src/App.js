@@ -2,6 +2,7 @@ import React from "react";
 import Tree from "./components/Tree";
 import ButtonOption from "./components/ButtonOption";
 import Search from "./components/Search";
+import TimeDown from "./components/TimeDown";
 import "./styles.css";
 
 const App = ({ topLevel, estimatedItemSize, containerHeight, treeData }) => {
@@ -15,6 +16,7 @@ const App = ({ topLevel, estimatedItemSize, containerHeight, treeData }) => {
         treeData={treeData}
       />
       <ButtonOption />
+      <TimeDown />
     </div>
   );
 };

@@ -8,7 +8,6 @@ import { debounce } from '../..//util';
 import {UPDATE_TEMP_VARS } from "../../constant/TreeActionType";
 
 const Search = () => {
-  // const state = useSelector(state => state);
   const dispatch = useDispatch();
   const refSearch = useRef(null);
 

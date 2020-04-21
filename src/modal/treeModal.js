@@ -1,6 +1,6 @@
 // import { List, fromJS, Map } from "immutable";
 import faker from "faker";
-import { Seq, List } from 'immutable';
+import { Seq, List, fromJS } from 'immutable';
 
 /**
    * 定义数据结构
@@ -115,6 +115,21 @@ const getAddItems = (selectKey, existedChildrenNodes, addCount) => {
     return existedChildrenNodes;
 }
 
+const getAddItemsByImmutable = (selectKey, tempChildrenNode, addCount) => {
+    const length = tempChildrenNode.get('children').size;
+    let childrenNode = tempChildrenNode;
+    for (let i = 0; i < addCount; i++) {
+      const index = length + i;
+      const key = `${selectKey}-${index}`;
+      childrenNode = childrenNode.setIn(['children', index], fromJS({
+        label: faker.lorem.words(),
+        value: `${key}-value`,
+        key,
+      }));
+    }
+    return childrenNode;
+}
+
 /**
    * 新增树节点
    * @param {node} selectNode 选中节点
@@ -127,27 +142,32 @@ async function addTreeNodes(selectNode, selectKey, treeData, dataName) {
     // 获取选中节点的子节点数组
     if (!selectKey) return alert('请先选中节点');
     const changedTreeData = traverseMapStructureAndChangeTreeData(List(treeData));
-    // const changedTreeData = treeData;
     const addCount = getH5Data(selectNode, dataName);
-    const arrKeyLevel = getArrayLevel(selectKey, '-');
     const arrKeyLevelWithChildren = getArrayLevelWithChildren(selectKey, '-');
-    console.log(arrKeyLevelWithChildren);
-    console.log(changedTreeData.getIn([...arrKeyLevelWithChildren]));
-    const arrKeyLevelLength = arrKeyLevel.length;
-    let tempTreeNodeData = changedTreeData.toArray();
-    for (let i = 0; i < arrKeyLevelLength; i++) {
-        if (i === arrKeyLevelLength - 1) {
-            // 当前节点在同级兄弟节点的下标
-            const currentIndex = arrKeyLevel[i];
-            // 获取当前节点的子节点
-            const childrenNodes = tempTreeNodeData[currentIndex].children || [];
-            const childrenNodes1 = getAddItems(selectKey, childrenNodes, addCount);
-            tempTreeNodeData[currentIndex].children = childrenNodes1;
-            break;
-        }
-        tempTreeNodeData = tempTreeNodeData[arrKeyLevel[i]].children;
+    let tempChangedTreeData = fromJS(changedTreeData.toArray());
+    let tempChildrenNode = tempChangedTreeData.getIn(arrKeyLevelWithChildren);
+    if (!tempChildrenNode.has('children')) {
+      tempChildrenNode = tempChildrenNode.set('children', fromJS([]));
     }
-    return changedTreeData;
+    tempChildrenNode = getAddItemsByImmutable(selectKey, tempChildrenNode, addCount);
+    tempChangedTreeData = tempChangedTreeData.setIn(arrKeyLevelWithChildren, tempChildrenNode);
+    return tempChangedTreeData.toJS();
+    // const arrKeyLevel = getArrayLevel(selectKey, '-');
+    // const arrKeyLevelLength = arrKeyLevel.length;
+    // let tempTreeNodeData = changedTreeData.toArray();
+    // for (let i = 0; i < arrKeyLevelLength; i++) {
+    //     if (i === arrKeyLevelLength - 1) {
+    //         // 当前节点在同级兄弟节点的下标
+    //         const currentIndex = arrKeyLevel[i];
+    //         // 获取当前节点的子节点
+    //         const childrenNodes = tempTreeNodeData[currentIndex].children || [];
+    //         const childrenNodes1 = getAddItems(selectKey, childrenNodes, addCount);
+    //         tempTreeNodeData[currentIndex].children = childrenNodes1;
+    //         break;
+    //     }
+    //     tempTreeNodeData = tempTreeNodeData[arrKeyLevel[i]].children;
+    // }
+    // return changedTreeData;
 }
   
 /**
@@ -187,10 +207,14 @@ async function deleteTreeNode(selectKey, treeData) {
     // 获取选中节点的子节点数组
     if (!selectKey) return alert('请先选中节点');
     const changedTreeData = traverseMapStructureAndChangeTreeData(List(treeData));
-    // const changedTreeData = treeData;
+    // const arrKeyLevel = getArrayLevelWithChildren(selectKey, '-');
+    // let tempChangedTreeData = fromJS(changedTreeData.toArray());
+    // tempChangedTreeData = tempChangedTreeData.deleteIn(arrKeyLevel);
+    // console.log(tempChangedTreeData);
+    // return treeData;
     const arrKeyLevel = getArrayLevel(selectKey, '-');
     const arrKeyLevelLength = arrKeyLevel.length;
-    let tempTreeNodeData = changedTreeData;
+    let tempTreeNodeData = changedTreeData.toArray();
     for (let i = 0; i < arrKeyLevelLength; i++) {
         if (i === arrKeyLevelLength - 1) {
             // 删除选中节点, 已改变原数组
@@ -339,10 +363,33 @@ function getVisibleData(options = {searchData: [], flattenData: [], search: '', 
     let seqListData = Seq(searchData);
     if (!flattenData) return;
     if (!!search) {
-      return seqListData.slice(0, topLevel);
+      return seqListData.take(topLevel);
     }
     seqListData = Seq(flattenData);
-    return seqListData.slice(start, start + visibleCount);
+    return seqListData.take(start + visibleCount).takeLast(visibleCount);
+}
+
+/**
+   * 获取查询结果的前n条数据
+   * @param {number} topLevel 数据条目数
+   * @param {array} searchData 查询结果
+   * @return {array} 返回前n条数据
+   */
+function getTopLevelData(topLevel, searchData) {
+    const seqListData = Seq(searchData);
+    return seqListData.take(topLevel);
+}
+
+/**
+   * 无查询时显示正常数据
+   * @param {number} start 开始位置
+   * @param {number} visibleCount 当前窗口显示数据的条目数
+   * @param {array} flattenData 全部结果
+   * @return {array}
+   */
+function getNormalData(start, visibleCount, flattenData) {
+    const seqListData = Seq(flattenData);
+    return seqListData.take(start + visibleCount).takeLast(visibleCount);
 }
 
 export {
@@ -356,4 +403,6 @@ export {
     flattenArray,
     getSearchList,
     getVisibleData,
+    getTopLevelData,
+    getNormalData,
 };
